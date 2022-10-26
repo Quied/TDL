@@ -1,0 +1,80 @@
+;
+; DriverFromWDK.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: specify appropriate Class
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=DriverFromWDK.cat
+DriverVer = 10/25/2022,21.1.13.522
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+DriverFromWDK_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+DriverFromWDK.sys  = 1,,
+;
+
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%DriverFromWDK.DeviceDesc%=DriverFromWDK_Device, Root\DriverFromWDK ; TODO: edit hw-id
+
+[DriverFromWDK_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+DriverFromWDK.sys
+
+;-------------- Service installation
+[DriverFromWDK_Device.NT.Services]
+AddService = DriverFromWDK,%SPSVCINST_ASSOCSERVICE%, DriverFromWDK_Service_Inst
+
+; -------------- DriverFromWDK driver install sections
+[DriverFromWDK_Service_Inst]
+DisplayName    = %DriverFromWDK.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\DriverFromWDK.sys
+
+;
+;--- DriverFromWDK_Device Coinstaller installation ------
+;
+
+[DriverFromWDK_Device.NT.CoInstallers]
+AddReg=DriverFromWDK_Device_CoInstaller_AddReg
+CopyFiles=DriverFromWDK_Device_CoInstaller_CopyFiles
+
+[DriverFromWDK_Device_CoInstaller_AddReg]
+;
+
+
+[DriverFromWDK_Device_CoInstaller_CopyFiles]
+;
+
+
+[DriverFromWDK_Device.NT.Wdf]
+KmdfService =  DriverFromWDK, DriverFromWDK_wdfsect
+[DriverFromWDK_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "DriverFromWDK Installation Disk"
+DriverFromWDK.DeviceDesc = "DriverFromWDK Device"
+DriverFromWDK.SVCDESC = "DriverFromWDK Service"

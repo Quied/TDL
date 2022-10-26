@@ -1,42 +1,20 @@
-#include "ntddk.h"
-#include "wdf.h"
+#include "Driver.h"
+#include "message.h"
 
-DRIVER_INITIALIZE DriverEntry;
-EVT_WDF_DRIVER_DEVICE_ADD DriverEvtDeviceAdd;
+#pragma warning (disable : 4100)
 
+NTSTATUS DriverEntry(PDRIVER_OBJECT pDriveObj,
+	PUNICODE_STRING pRegistKey) {
+	pDriveObj->DriverUnload = UnloadDriver;
+	DbgPrintEx(0, 0, "message");
 
-NTSTATUS DriverENTRY(
-	_In_ PDRIVER_OBJECT DriverObj,
-	_In_ PUNICODE_STRING RegistryPath ) {
+	DebugMessage("Driver Load");
 
-	NTSTATUS status = STATUS_SUCCESS;
-	WDF_DRIVER_CONFIG config;
-
-	// Print Information
-	KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "Driver Entry"))
-
-	WDF_DRIVER_CONFIG_INIT(&config, DriverEvtDeviceAdd);
-	status = WdfDriverCreate(DriverObj, RegistryPath,
-		WDF_NO_OBJECT_ATTRIBUTES, &config, WDF_NO_HANDLE);
-
-
-	return status;
+	return STATUS_SUCCESS;
 }
 
-NTSTATUS DriverEvtDeviceAdd_Next(
-	_In_ WDFDRIVER Driver,
-	_Inout_ PWDFDEVICE_INIT DeviceInit ) {
+NTSTATUS UnloadDriver(PDRIVER_OBJECT pDriverOvb) {
+	DebugMessage("Driver UnLoad");
 
-	UNREFERENCED_PARAMETER(Driver);
-
-	NTSTATUS status;
-
-	WDFDEVICE hDevice;
-
-	KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "EvtDeviceAdd"));
-	
-	status = WdfDeviceCreate(&DeviceInit, WDF_NO_OBJECT_ATTRIBUTES, &hDevice);
-
-
-	return status;
+	return STATUS_SUCCESS;
 }
